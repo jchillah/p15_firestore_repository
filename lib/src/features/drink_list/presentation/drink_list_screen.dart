@@ -39,14 +39,40 @@ class DrinkListScreenState extends State<DrinkListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Drink List'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              _showSearchDialog(context);
-            },
-          ),
+        actions: const [
+          SizedBox(width: 8),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search by drink type...',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {
+                      _query = '';
+                    });
+                  },
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _query = value;
+                });
+              },
+            ),
+          ),
+        ),
       ),
       body: StreamBuilder<List<Drink>>(
         stream: _drinksStream,
@@ -127,7 +153,7 @@ class DrinkListScreenState extends State<DrinkListScreen> {
     }
   }
 
-  void _showSearchDialog(BuildContext context) {
+  void showSearchDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {

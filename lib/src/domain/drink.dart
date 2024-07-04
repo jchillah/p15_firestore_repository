@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Drink {
-  final int id; // ID als int definieren
+  final int id;
   final String type;
   final String name;
   final String brand;
