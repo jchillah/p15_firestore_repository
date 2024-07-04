@@ -133,9 +133,12 @@ class DrinkListScreenState extends State<DrinkListScreen> {
     if (_query.isEmpty) {
       return drinks;
     } else {
+      final queryLowerCase = _query.toLowerCase();
       return drinks
           .where((drink) =>
-              drink.type.toLowerCase().contains(_query.toLowerCase()))
+              drink.type.toLowerCase().contains(queryLowerCase) ||
+              drink.name.toLowerCase().contains(queryLowerCase) ||
+              drink.brand.toLowerCase().contains(queryLowerCase))
           .toList();
     }
   }
@@ -169,7 +172,7 @@ class DrinkListScreenState extends State<DrinkListScreen> {
           content: TextField(
             controller: _searchController,
             decoration: const InputDecoration(
-              hintText: 'Enter drink type',
+              hintText: 'Enter Drink Name',
             ),
             onChanged: (value) {
               setState(() {
