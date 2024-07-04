@@ -8,18 +8,18 @@ class DrinkListScreen extends StatefulWidget {
   final DatabaseRepository databaseRepository;
 
   const DrinkListScreen({
-    Key? key,
+    super.key,
     required this.databaseRepository,
     required AuthRepository authRepository,
-  }) : super(key: key);
+  });
 
   @override
-  _DrinkListScreenState createState() => _DrinkListScreenState();
+  DrinkListScreenState createState() => DrinkListScreenState();
 }
 
-class _DrinkListScreenState extends State<DrinkListScreen> {
+class DrinkListScreenState extends State<DrinkListScreen> {
   late Stream<List<Drink>> _drinksStream;
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   String _query = '';
 
   @override
@@ -38,7 +38,7 @@ class _DrinkListScreenState extends State<DrinkListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Drink List'),
+        title: const Text('Drink List'),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -132,10 +132,10 @@ class _DrinkListScreenState extends State<DrinkListScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Search Drinks'),
+          title: const Text('Search Drinks'),
           content: TextField(
             controller: _searchController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Enter drink type',
             ),
             onChanged: (value) {
@@ -146,7 +146,7 @@ class _DrinkListScreenState extends State<DrinkListScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Search'),
+              child: const Text('Search'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
