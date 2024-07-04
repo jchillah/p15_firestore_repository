@@ -98,7 +98,8 @@ class DrinkListScreenState extends State<DrinkListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(drink.name),
-                    Text('${drink.brand}'), // Hier die Brand anzeigen
+                    Text(drink.brand),
+                    // Hier die Brand anzeigen
                   ],
                 ),
                 trailing: IconButton(
