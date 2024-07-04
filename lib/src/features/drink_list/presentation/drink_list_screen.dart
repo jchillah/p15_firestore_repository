@@ -7,24 +7,49 @@ import 'package:p15_firestore_repository/src/features/add_drink/presentation/add
 class DrinkListScreen extends StatefulWidget {
   final DatabaseRepository databaseRepository;
 
-  const DrinkListScreen(
-      {super.key,
-      required this.databaseRepository,
-      required AuthRepository authRepository});
+  const DrinkListScreen({
+    Key? key,
+    required this.databaseRepository,
+    required AuthRepository authRepository,
+  }) : super(key: key);
 
   @override
   _DrinkListScreenState createState() => _DrinkListScreenState();
 }
 
 class _DrinkListScreenState extends State<DrinkListScreen> {
+  late Stream<List<Drink>> _drinksStream;
+  TextEditingController _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _drinksStream = widget.databaseRepository.drinksStream();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Drink List'),
+        title: Text('Drink List'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              _showSearchDialog(context);
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<List<Drink>>(
-        stream: widget.databaseRepository.drinksStream(),
+        stream: _drinksStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -35,11 +60,12 @@ class _DrinkListScreenState extends State<DrinkListScreen> {
           }
 
           final drinks = snapshot.data!;
+          final filteredDrinks = _filterDrinks(drinks);
 
           return ListView.builder(
-            itemCount: drinks.length,
+            itemCount: filteredDrinks.length,
             itemBuilder: (context, index) {
-              final drink = drinks[index];
+              final drink = filteredDrinks[index];
               return ListTile(
                 title: Text(drink.type),
                 subtitle: Text(drink.name),
@@ -58,10 +84,11 @@ class _DrinkListScreenState extends State<DrinkListScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) {
-              return AddDrinkScreen(
-                  databaseRepository: widget.databaseRepository);
-            }),
+            MaterialPageRoute(
+              builder: (context) => AddDrinkScreen(
+                databaseRepository: widget.databaseRepository,
+              ),
+            ),
           );
         },
         child: const Icon(Icons.add),
@@ -69,7 +96,18 @@ class _DrinkListScreenState extends State<DrinkListScreen> {
     );
   }
 
-  Future<void> _removeDrink(int drinkId) async {
+  List<Drink> _filterDrinks(List<Drink> drinks) {
+    if (_query.isEmpty) {
+      return drinks;
+    } else {
+      return drinks
+          .where((drink) =>
+              drink.type.toLowerCase().contains(_query.toLowerCase()))
+          .toList();
+    }
+  }
+
+  void _removeDrink(int drinkId) async {
     try {
       await widget.databaseRepository.removeDrink(drinkId);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -87,5 +125,35 @@ class _DrinkListScreenState extends State<DrinkListScreen> {
         ),
       );
     }
+  }
+
+  void _showSearchDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Search Drinks'),
+          content: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Enter drink type',
+            ),
+            onChanged: (value) {
+              setState(() {
+                _query = value;
+              });
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Search'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
