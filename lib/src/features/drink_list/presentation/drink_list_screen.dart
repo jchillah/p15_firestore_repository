@@ -94,7 +94,13 @@ class DrinkListScreenState extends State<DrinkListScreen> {
               final drink = filteredDrinks[index];
               return ListTile(
                 title: Text(drink.type),
-                subtitle: Text(drink.name),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(drink.name),
+                    Text('${drink.brand}'), // Hier die Brand anzeigen
+                  ],
+                ),
                 trailing: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () {
